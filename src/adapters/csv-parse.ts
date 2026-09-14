@@ -1,8 +1,11 @@
 /**
  * Minimal RFC 4180 reader: quoted fields, escaped quotes, embedded newlines,
  * and CRLF. Shopify exports hit all four.
+ *
+ * `delimiter` handles tab-separated feeds. Converting tabs to commas instead
+ * would corrupt every field that legitimately contains a comma.
  */
-export function parseCsv(input: string): string[][] {
+export function parseCsv(input: string, delimiter = ','): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -47,7 +50,7 @@ export function parseCsv(input: string): string[][] {
       i += 1;
       continue;
     }
-    if (char === ',') {
+    if (char === delimiter) {
       pushField();
       i += 1;
       continue;
@@ -77,8 +80,15 @@ export interface CsvTable {
   rows: Record<string, string>[];
 }
 
-export function toTable(input: string): CsvTable {
-  const raw = parseCsv(input);
+/** Picks the delimiter from the header row: tabs win only if they are there. */
+export function detectDelimiter(input: string): string {
+  const newline = input.indexOf('\n');
+  const header = newline === -1 ? input : input.slice(0, newline);
+  return header.includes('\t') ? '\t' : ',';
+}
+
+export function toTable(input: string, delimiter?: string): CsvTable {
+  const raw = parseCsv(input, delimiter ?? detectDelimiter(input));
   const headers = raw[0];
   if (!headers) return { headers: [], rows: [] };
 

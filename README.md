@@ -145,9 +145,56 @@ in testing, a proposal quoting real copy at 0.97 confidence but stating
 Only `accepted` proposals are applied, and **an attribute the merchant already
 set is never overwritten.** Everything held for review stays a human decision.
 
+## Truth check: `catalog-score truth`
+
+Job 3. Reconciles the same catalogue as published to several surfaces —
+storefront, Merchant feed, marketplace — and reports where they disagree.
+
+```bash
+npm run dev -- truth ./shopify_export.csv ./google_feed.tsv \
+  --currency INR --report drift.csv
+```
+
+This is the check nothing in a merchant's stack performs. Each surface looks
+correct on its own; only comparing them shows that the feed is still selling
+an item the store marked out of stock, or quoting last month's price.
+
+### Matching before comparing
+
+Items are matched across surfaces by the strongest usable identifier — GTIN,
+then SKU/MPN, then handle plus option values. Three rules keep a match honest:
+
+- **An unusable identifier produces no key.** A GTIN that fails its check digit
+  or a SKU of `N/A` identifies nothing, and must not be allowed to join two
+  unrelated variants.
+- **A stronger identifier vetoes a weaker match.** Two variants sharing a
+  handle but carrying different SKUs are not the same item, whatever the
+  handle says.
+- **A reused identifier is reported, not guessed at.** If one surface uses the
+  same GTIN on two variants, matching is ambiguous, so it is raised as its own
+  finding instead of picking a side.
+
+### What it reports
+
+| Finding | Severity | Why |
+| --- | --- | --- |
+| Price differs, both surfaces sellable | critical | An agent transacts at the wrong price |
+| Availability differs | critical | One surface sells what another says is gone |
+| Currency differs | critical | The same item priced in two currencies |
+| Missing from a surface | major | Published in one place, not another |
+| Identifier reused within a surface | major | An agent cannot tell the variants apart |
+| Title drift | minor | Same identifier, materially different titles |
+
+Exit code is `3` when anything critical is found, so it drops into CI.
+
+Items that appear on only one surface are **not** reported by default — a
+merchant legitimately publishes a subset to a marketplace, and flagging all of
+it buries the price and stock mismatches that matter. Pass `--show-unmatched`
+to see them.
+
 ### Status
 
-67 tests pass; typecheck is clean. The live public-feed path is covered by unit
+95 tests pass; typecheck is clean. The live public-feed path is covered by unit
 tests with an injected `fetch` (paging, short-page termination, error
 messaging), but **the real network hop has not been exercised** — this
 development environment's policy blocks outbound requests to arbitrary hosts.
@@ -160,7 +207,10 @@ run end to end. **The real Claude call is unverified**: this environment has no
 API credential, so `ClaudeProposer` has never executed against the live API.
 Run it with a key on your own machine before trusting it.
 
-Still to build: cross-surface price and stock reconciliation (job 3) and
-agent-citation attribution (job 4). Enrichment currently makes one API call per
-product; for catalogue-scale runs it should move to the Batches API, which is
-asynchronous and half the cost.
+Still to build: agent-citation attribution (job 4) — the retention hook, and
+the only one of the four that proves its own worth every month. Enrichment
+currently makes one API call per product; for catalogue-scale runs it should
+move to the Batches API, which is asynchronous and half the cost.
+
+Google Merchant XML/RSS feeds are not read yet; only the tabular TSV/CSV
+format is.

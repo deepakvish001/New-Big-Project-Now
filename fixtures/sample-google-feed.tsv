@@ -1,0 +1,4 @@
+id	item_group_id	title	description	link	image_link	availability	price	gtin	mpn	brand	product_type	google_product_category
+KW-SOCK-CHR-M	merino-crew-sock	Merino Wool Crew Sock - Charcoal	17.5 micron merino, 80% wool.	https://shop.test/products/merino-crew-sock	https://cdn.example.com/sock-1.jpg	in stock	949.00 INR	8901234567890	KW-SOCK-CHR-M	Kalinga Wool	Socks	Apparel & Accessories > Clothing
+KW-SOCK-CHR-L	merino-crew-sock	Merino Wool Crew Sock - Charcoal	17.5 micron merino, 80% wool.	https://shop.test/products/merino-crew-sock	https://cdn.example.com/sock-2.jpg	in stock	899.00 INR	8901234567906	KW-SOCK-CHR-L	Kalinga Wool	Socks	Apparel & Accessories > Clothing
+KW-SOCK-NVY-M	merino-crew-sock-navy	Merino Wool Crew Sock - Navy	17.5 micron merino, 80% wool.	https://shop.test/products/merino-crew-sock-navy	https://cdn.example.com/sock-4.jpg	in stock	899.00 INR	8901234567906	KW-SOCK-NVY-M	Kalinga Wool	Socks	Apparel & Accessories > Clothing
