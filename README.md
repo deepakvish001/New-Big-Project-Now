@@ -11,10 +11,20 @@ no product code should be written until it is.
 
 ## Start here
 
-- [`docs/PRODUCT-THESIS.md`](docs/PRODUCT-THESIS.md) — the full thesis: the
-  buyer, the wedge, the market gap, pricing, MVP scope, go-to-market,
-  validation gate, risks and kill criteria, plus the runner-up ideas that were
-  considered and rejected.
+- [`docs/INDIA-THESIS.md`](docs/INDIA-THESIS.md) — **India market, ship first.**
+  Contractor compliance verification for principal employers: the labour-code
+  window, the liability chain, per-contractor pricing, the services-led revenue
+  ramp, and a four-week v0.
+- [`docs/PRODUCT-THESIS.md`](docs/PRODUCT-THESIS.md) — **US market, higher ARPU.**
+  Vendor-insurance (COI) compliance: the buyer, the wedge, the price-ladder gap,
+  MVP scope, go-to-market, validation gate, risks and kill criteria, plus the
+  runner-up ideas that were considered and rejected.
+
+Both documents describe the **same engine** — collect, read, verify against
+rules, chase until resolved, gate the payment, re-run every cycle. Only the
+document type and the rule library differ. India is the cash-flow market and
+can be reached this month; the US is the ARPU market, at roughly 15–20× revenue
+per account.
 
 ## One-paragraph summary
 
