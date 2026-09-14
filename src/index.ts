@@ -47,3 +47,13 @@ export function applicableRules(catalogue: Catalogue, all: Rule[] = RULES): Rule
   const blind = new Set(catalogue.blindRules ?? []);
   return blind.size === 0 ? all : all.filter((rule) => !blind.has(rule.id));
 }
+
+export {
+  buildBatchRequests,
+  enrichCatalogueBatched,
+  planBatch,
+  readBatchResult,
+  toCustomId,
+  waitForBatch,
+} from './enrich/batch.ts';
+export type { BatchClient, BatchItem, BatchOutcome, BatchRequest } from './enrich/batch.ts';

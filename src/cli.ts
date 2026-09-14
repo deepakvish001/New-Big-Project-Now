@@ -16,6 +16,8 @@ import { renderEnrichTerminal, renderProposalsCsv } from './report/proposals.ts'
 import { renderTruthCsv, renderTruthTerminal } from './report/truth.ts';
 import { applyAccepted, enrichCatalogue } from './enrich/index.ts';
 import { ClaudeProposer, NullProposer } from './enrich/proposer.ts';
+import { enrichCatalogueBatched } from './enrich/batch.ts';
+import type { BatchClient } from './enrich/batch.ts';
 import type { Proposer } from './enrich/types.ts';
 import { reconcile } from './truth/index.ts';
 import type { NamedCatalogue } from './truth/index.ts';
@@ -47,6 +49,8 @@ Enrich options (restructures existing copy into missing attributes):
   --model <id>        Claude model (default claude-opus-5)
   --proposals <file>  write the review sheet as CSV
   --dry-run           report the gaps without calling the API
+  --batch             submit through the Batches API: asynchronous, half price,
+                      and the only affordable way to run a whole catalogue
 
 Truth options (reconciles the same catalogue across surfaces):
   --report <file>     write the discrepancy list as CSV
@@ -77,6 +81,7 @@ interface Args {
   model?: string;
   proposals?: string;
   dryRun: boolean;
+  batch: boolean;
   report?: string;
   showUnmatched: boolean;
   format?: CsvKind;
@@ -100,6 +105,7 @@ export function parseArgs(argv: string[]): Args {
     limit: 25,
     concurrency: 4,
     dryRun: false,
+    batch: false,
     showUnmatched: false,
   };
 
@@ -117,6 +123,7 @@ export function parseArgs(argv: string[]): Args {
       case '--help': args.help = true; break;
       case '--json': args.json = true; break;
       case '--dry-run': args.dryRun = true; break;
+      case '--batch': args.batch = true; break;
       case '--show-unmatched': args.showUnmatched = true; break;
       case '--no-colour':
       case '--no-color': args.colour = false; break;
@@ -266,24 +273,48 @@ async function runScore(args: Args, catalogue: Catalogue): Promise<number> {
   return 0;
 }
 
-async function runEnrich(args: Args, catalogue: Catalogue): Promise<number> {
-  const proposer: Proposer = args.dryRun
-    ? new NullProposer()
-    : new ClaudeProposer(args.model ? { model: args.model } : {});
+/** Builds the real SDK client, lazily, so scoring never loads it. */
+async function batchClient(): Promise<BatchClient> {
+  let Anthropic: typeof import('@anthropic-ai/sdk').default;
+  try {
+    ({ default: Anthropic } = await import('@anthropic-ai/sdk'));
+  } catch {
+    throw new Error('Batched enrichment needs the Anthropic SDK. Run: npm install @anthropic-ai/sdk zod');
+  }
+  return new Anthropic() as unknown as BatchClient;
+}
 
+async function runEnrich(args: Args, catalogue: Catalogue): Promise<number> {
   const scoped: Catalogue = { ...catalogue, products: catalogue.products.slice(0, args.limit) };
   const rules = applicableRules(catalogue);
 
   if (!args.json && !args.dryRun) {
+    const how = args.batch ? 'in one batch (half price, asynchronous)' : `${args.concurrency} at a time`;
     process.stdout.write(
-      `\n  Enriching ${scoped.products.length} products with ${args.model ?? 'claude-opus-5'}...\n`,
+      `\n  Enriching ${scoped.products.length} products with ${args.model ?? 'claude-opus-5'}, ${how}...\n`,
     );
   }
 
-  const result = await enrichCatalogue(scoped, proposer, {
-    concurrency: args.concurrency,
-    limit: args.limit,
-  });
+  let result;
+  if (args.batch && !args.dryRun) {
+    result = await enrichCatalogueBatched(scoped, await batchClient(), {
+      model: args.model,
+      onProgress: (phase, detail) => {
+        if (!args.json) process.stdout.write(`  ${phase}${detail ? `: ${detail}` : ''}\n`);
+      },
+    });
+    if (!args.json && result.batchId) {
+      process.stdout.write(`  Batch ${result.batchId} — results stay available for 29 days.\n`);
+    }
+  } else {
+    const proposer: Proposer = args.dryRun
+      ? new NullProposer()
+      : new ClaudeProposer(args.model ? { model: args.model } : {});
+    result = await enrichCatalogue(scoped, proposer, {
+      concurrency: args.concurrency,
+      limit: args.limit,
+    });
+  }
 
   const before = scoreCatalogue(scoped, { rules }).score;
   const byId = new Map(result.products.map((entry) => [entry.productId, entry]));

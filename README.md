@@ -192,6 +192,32 @@ merchant legitimately publishes a subset to a marketplace, and flagging all of
 it buries the price and stock mismatches that matter. Pass `--show-unmatched`
 to see them.
 
+### Running a whole catalogue: `--batch`
+
+One API call per product is fine for a 25-product trial and unaffordable for
+40,000 SKUs. `--batch` submits the whole run through the Batches API instead:
+asynchronous, **half price**, up to 100,000 requests per batch.
+
+```bash
+npm run dev -- enrich ./products_export.csv --limit 5000 --batch --proposals review.csv
+```
+
+Verification is identical to the synchronous path — only the transport differs,
+so a fabricated evidence span is rejected either way. Three things the batch
+path is careful about, because each one would otherwise lose a merchant's
+products silently:
+
+- **Custom ids are derived, never assumed.** Product handles carry slashes and
+  unicode and feed ids repeat; ids are sanitised and index-suffixed so two
+  products can never collide.
+- **Every documented failure is surfaced** — `errored` (split into retry-safe
+  and do-not-retry), `canceled`, `expired`, refusals, and replies truncated by
+  `max_tokens` each produce a reason on the affected product.
+- **A request that never comes back is reported**, not treated as "no proposals".
+
+If the poll times out, the batch keeps running server-side and its results stay
+available for 29 days — the error says so rather than implying the work is lost.
+
 ### Status
 
 95 tests pass; typecheck is clean. The live public-feed path is covered by unit
