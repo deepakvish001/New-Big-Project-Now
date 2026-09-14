@@ -85,7 +85,17 @@ export function dimensionEvidence(product: Product, dimension: QueryDimension): 
     return { dimension, answered: true, source: 'option' };
   }
 
-  const text = [product.title, product.description, ...(product.tags ?? [])]
+  // Weak, free-text evidence. Image alt text and attribute *values* count here
+  // for the same reason a description does: they are machine-readable content
+  // the merchant already published, just not as a named field. They earn half
+  // credit, which is what unstructured evidence is worth to an agent.
+  const text = [
+    product.title,
+    product.description,
+    ...(product.tags ?? []),
+    ...(product.images ?? []).map((image) => image.alt),
+    ...Object.values(product.attributes ?? {}),
+  ]
     .filter(Boolean)
     .join(' ');
   if (text && TEXT_SIGNALS[dimension].test(text)) {

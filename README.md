@@ -109,15 +109,58 @@ src/
   cli.ts                argument parsing and wiring
 ```
 
+## Enrichment: `catalog-score enrich`
+
+Job 2 from the thesis. Turns the gaps the score found into proposed structured
+attributes — **drawn only from copy the merchant already published.**
+
+```bash
+export ANTHROPIC_API_KEY=...          # required for real proposals
+
+npm run dev -- enrich ./products_export.csv --limit 10 --proposals review.csv
+npm run dev -- enrich ./products.json --dry-run    # gaps only, no API spend
+```
+
+Output is a review sheet: one row per proposed attribute, carrying the value,
+a confidence, **the exact evidence span it came from**, and a verdict.
+
+### The model is never trusted about provenance
+
+The prompt forbids inference and requires a verbatim quote. That alone is not a
+guarantee, so every proposal is independently checked before it can be written:
+
+| Check | Why |
+| --- | --- |
+| `key` was one of the requested attributes | Stops the model inventing new fields |
+| `evidence` appears verbatim in the merchant's own content | Catches a fabricated quote |
+| **every number in `value` also appears in `evidence`** | Catches a real quote with a fabricated figure bolted on |
+| `evidence` is at least 8 characters | "wool" matches anything and proves nothing |
+| confidence ≥ 0.8 | Below that it is held for review; below 0.5 it is discarded |
+
+That third check is the one that matters. A hallucinated fibre grade or
+dimension becomes a customer return, and high confidence does not rescue it —
+in testing, a proposal quoting real copy at 0.97 confidence but stating
+`21.5 micron` where the evidence said `17.5 micron` is rejected.
+
+Only `accepted` proposals are applied, and **an attribute the merchant already
+set is never overwritten.** Everything held for review stays a human decision.
+
 ### Status
 
-39 tests pass; typecheck is clean. The live public-feed path is covered by unit
+67 tests pass; typecheck is clean. The live public-feed path is covered by unit
 tests with an injected `fetch` (paging, short-page termination, error
 messaging), but **the real network hop has not been exercised** — this
 development environment's policy blocks outbound requests to arbitrary hosts.
 Run `npm run dev -- <a real store domain>` on an unrestricted machine before
 relying on it.
 
-Not built yet, by design: attribute generation, cross-surface price and stock
-reconciliation, and agent-citation attribution. Those are jobs 2–4 in the
-thesis; this is job 1.
+The enrichment pipeline is fully tested against a stub proposer — gap
+detection, verification, concurrency, scoring delta and the review sheet all
+run end to end. **The real Claude call is unverified**: this environment has no
+API credential, so `ClaudeProposer` has never executed against the live API.
+Run it with a key on your own machine before trusting it.
+
+Still to build: cross-surface price and stock reconciliation (job 3) and
+agent-citation attribution (job 4). Enrichment currently makes one API call per
+product; for catalogue-scale runs it should move to the Batches API, which is
+asynchronous and half the cost.
