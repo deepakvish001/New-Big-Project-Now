@@ -1,0 +1,5 @@
+Handle,Title,Body (HTML),Vendor,Product Category,Type,Tags,Published,Option1 Name,Option1 Value,Option2 Name,Option2 Value,Option3 Name,Option3 Value,Variant SKU,Variant Grams,Variant Inventory Tracker,Variant Inventory Qty,Variant Inventory Policy,Variant Price,Variant Barcode,Image Src,Image Alt Text,Status,Material (product.metafields.custom.material)
+merino-crew-sock,"Merino Wool Crew Sock - Charcoal","<p>17.5 micron merino, 80% wool. Machine wash 30 C.</p>",Kalinga Wool,Apparel & Accessories > Clothing,Socks,"hiking, merino",TRUE,Size,M,Colour,Charcoal,,,KW-SOCK-CHR-M,62,shopify,24,deny,899.00,8901234567890,https://cdn.example.com/sock-1.jpg,"Charcoal merino crew sock",active,"80% merino wool, 18% nylon, 2% elastane"
+merino-crew-sock,,,,,,,,,L,,Charcoal,,,KW-SOCK-CHR-L,68,shopify,0,deny,899.00,8901234567906,https://cdn.example.com/sock-2.jpg,"Sock worn with boot",active,
+merino-crew-sock,,,,,,,,,,,,,,,,,,,,,https://cdn.example.com/sock-3.jpg,"Knit texture",active,
+plain-tee,"TEE","<p>Nice tee, very comfy!!</p>",,,,,TRUE,Title,Default Title,,,,,,,,,,499.00,,https://cdn.example.com/tee.jpg,,active,
