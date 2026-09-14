@@ -41,3 +41,83 @@ and sends reminders; none of it does the chasing, the reading, or the
 judging. That end-to-end loop is what this product automates, and it is newly
 buildable. The gap in the market is priced at $60–150 per vendor per year,
 between $30/yr storage tools and $450–900/yr enterprise platforms.
+
+---
+
+## The tool: `catalog-score`
+
+The first thing from the catalogue thesis, built. It scores a product catalogue
+for how readable it is to an AI shopping agent, and produces the free report
+that is meant to be the acquisition engine.
+
+```bash
+npm install
+npm test
+
+# a Shopify product export
+npm run dev -- ./products_export.csv --currency INR --out report.html
+
+# any storefront's public product feed — no credentials, no install
+npm run dev -- example.com --out report.html
+
+# machine-readable
+npm run dev -- ./fixtures/sample-products.json --json
+```
+
+Output is a 0–100 score with a grade, a per-group breakdown, the issues ranked
+by how many points of the headline score each is costing across the whole
+catalogue, and the worst-performing products.
+
+### How it scores
+
+Fifteen weighted rules in five groups, 120 points in total:
+
+| Group | Points | What it checks |
+| --- | --- | --- |
+| `identity` | 30 | GTIN with a valid check digit, brand, SKU/MPN, mapped taxonomy |
+| `descriptive` | 30 | Title self-sufficiency, factual description, structured attribute count |
+| `commerce` | 30 | Price, currency, explicit availability, tracked stock, record freshness |
+| `media` | 10 | Image count, alt text |
+| `answerability` | 20 | Whether the data answers the dimensions shoppers actually ask about |
+
+`answerability` is the differentiated check and the heaviest single rule. For
+each category it picks the dimensions queries turn on — material, size, care,
+use case, compatibility, capacity — and looks for evidence. **A structured
+attribute earns full credit; the same fact buried in description prose earns
+half**, because that is roughly how much use an agent gets from each.
+
+### Honesty rules baked in
+
+- **A field that cannot be read is never reported as missing.** A store's public
+  `/products.json` does not expose barcodes, stock or currency, so those rules
+  are *dropped*, not failed, and the report says which checks were skipped and
+  why. The same applies to the CSV path, which carries no timestamp.
+- **A malformed GTIN scores zero, not partial credit,** and is called out
+  separately — a barcode that fails its check digit is worse than an empty one,
+  because the merchant believes they are covered.
+
+### Layout
+
+```
+src/
+  types.ts              canonical catalogue model
+  score.ts              single-pass scoring engine and roll-up
+  rules/index.ts        the rule library — the actual asset
+  rules/context.ts      category buckets and query-dimension evidence
+  adapters/             Shopify products.json, Shopify CSV, CSV reader
+  report/               terminal and standalone HTML renderers
+  cli.ts                argument parsing and wiring
+```
+
+### Status
+
+39 tests pass; typecheck is clean. The live public-feed path is covered by unit
+tests with an injected `fetch` (paging, short-page termination, error
+messaging), but **the real network hop has not been exercised** — this
+development environment's policy blocks outbound requests to arbitrary hosts.
+Run `npm run dev -- <a real store domain>` on an unrestricted machine before
+relying on it.
+
+Not built yet, by design: attribute generation, cross-surface price and stock
+reconciliation, and agent-citation attribution. Those are jobs 2–4 in the
+thesis; this is job 1.

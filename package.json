@@ -1,0 +1,22 @@
+{
+  "name": "catalog-score",
+  "version": "0.1.0",
+  "description": "Score a product catalogue for AI shopping agent readability (ACP / UCP).",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "bin": { "catalog-score": "./dist/cli.js" },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": { "node": ">=22.6" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "node --experimental-strip-types src/cli.ts",
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

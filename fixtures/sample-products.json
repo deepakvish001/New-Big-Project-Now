@@ -1,0 +1,62 @@
+{
+  "products": [
+    {
+      "id": 1001,
+      "handle": "merino-crew-sock",
+      "title": "Merino Wool Crew Sock - Charcoal, Men's M (UK 7-9)",
+      "body_html": "<p>Knitted from 17.5 micron merino wool, so it insulates at 0-15 &deg;C without the itch coarser wool causes. Composition is 80% merino wool, 18% nylon and 2% elastane. Cushioned heel and arch band for hiking. Machine wash at 30 &deg;C, do not tumble dry. Sold as a single pair.</p>",
+      "vendor": "Kalinga Wool",
+      "product_type": "Socks",
+      "tags": ["hiking", "merino", "winter"],
+      "updated_at": "2026-09-10T08:00:00Z",
+      "options": [
+        { "name": "Size", "values": ["M", "L"] },
+        { "name": "Colour", "values": ["Charcoal"] }
+      ],
+      "variants": [
+        { "id": 1, "sku": "KW-SOCK-CHR-M", "barcode": "8901234567890", "price": "899.00", "available": true, "option1": "M", "option2": "Charcoal", "grams": 62 },
+        { "id": 2, "sku": "KW-SOCK-CHR-L", "barcode": "8901234567906", "price": "899.00", "available": true, "option1": "L", "option2": "Charcoal", "grams": 68 }
+      ],
+      "images": [
+        { "src": "https://cdn.example.com/sock-1.jpg", "alt": "Charcoal merino crew sock, pair, flat lay" },
+        { "src": "https://cdn.example.com/sock-2.jpg", "alt": "Charcoal merino crew sock worn with boot" },
+        { "src": "https://cdn.example.com/sock-3.jpg", "alt": "Close-up of merino knit texture" }
+      ]
+    },
+    {
+      "id": 1002,
+      "handle": "crew-sock-charcoal",
+      "title": "Crew Sock - Charcoal - M",
+      "body_html": "<p>Our bestselling sock. Super comfy!</p>",
+      "vendor": "",
+      "product_type": "",
+      "tags": [],
+      "updated_at": "2025-11-02T08:00:00Z",
+      "options": [{ "name": "Title", "values": ["Default Title"] }],
+      "variants": [
+        { "id": 3, "sku": "", "barcode": "", "price": "0.00", "available": true, "option1": "Default Title" }
+      ],
+      "images": [{ "src": "https://cdn.example.com/plain.jpg", "alt": null }]
+    },
+    {
+      "id": 1003,
+      "handle": "cotton-kurta-indigo",
+      "title": "Handloom Cotton Kurta, Indigo",
+      "body_html": "<p>Handwoven cotton kurta in indigo. Regular fit with side slits. Length 104 cm.</p>",
+      "vendor": "Rangriti",
+      "product_type": "Kurta",
+      "tags": ["cotton", "handloom"],
+      "updated_at": "2026-08-20T08:00:00Z",
+      "options": [{ "name": "Size", "values": ["M", "L", "XL"] }],
+      "variants": [
+        { "id": 4, "sku": "RG-KRT-IND-M", "barcode": "8901234567913", "price": "1499.00", "available": true, "option1": "M" },
+        { "id": 5, "sku": "RG-KRT-IND-L", "barcode": "12345", "price": "1499.00", "available": true, "option1": "L" },
+        { "id": 6, "sku": "RG-KRT-IND-XL", "barcode": "", "price": "1499.00", "available": false, "option1": "XL" }
+      ],
+      "images": [
+        { "src": "https://cdn.example.com/kurta-1.jpg", "alt": "Indigo handloom cotton kurta, front" },
+        { "src": "https://cdn.example.com/kurta-2.jpg" }
+      ]
+    }
+  ]
+}
