@@ -1,30 +1,35 @@
-# The Certificate Gap
+# Market Research
 
-Product research and thesis for an **autonomous vendor-insurance compliance
-agent** — software that collects, reads, verifies and chases Certificates of
-Insurance on behalf of US general contractors, property managers and
-facilities firms.
+Three researched product theses, one shared engine. Pick one, validate it,
+then build.
 
-**Status:** research complete, pre-build. The validation gate in
-[`docs/PRODUCT-THESIS.md`](docs/PRODUCT-THESIS.md) has not yet been passed —
-no product code should be written until it is.
+**Status:** research complete, pre-build. Each thesis carries its own
+validation gate and kill criteria. No product code should be written until a
+gate is passed.
 
-## Start here
+## Three theses
 
-- [`docs/INDIA-THESIS.md`](docs/INDIA-THESIS.md) — **India market, ship first.**
-  Contractor compliance verification for principal employers: the labour-code
-  window, the liability chain, per-contractor pricing, the services-led revenue
-  ramp, and a four-week v0.
-- [`docs/PRODUCT-THESIS.md`](docs/PRODUCT-THESIS.md) — **US market, higher ARPU.**
-  Vendor-insurance (COI) compliance: the buyer, the wedge, the price-ladder gap,
-  MVP scope, go-to-market, validation gate, risks and kill criteria, plus the
-  runner-up ideas that were considered and rejected.
+| Doc | Market | Sells because | First revenue | Sales motion |
+| --- | --- | --- | --- | --- |
+| [`docs/AGENT-COMMERCE-THESIS.md`](docs/AGENT-COMMERCE-THESIS.md) | Merchant catalogues, global | Revenue upside | 1–2 weeks | Self-serve |
+| [`docs/INDIA-THESIS.md`](docs/INDIA-THESIS.md) | Labour contractors, India | Liability | 3–4 weeks | Field visits |
+| [`docs/PRODUCT-THESIS.md`](docs/PRODUCT-THESIS.md) | Vendor insurance, US | Liability | 6–10 weeks | Outbound + audit |
 
-Both documents describe the **same engine** — collect, read, verify against
-rules, chase until resolved, gate the payment, re-run every cycle. Only the
-document type and the rule library differ. India is the cash-flow market and
-can be reached this month; the US is the ARPU market, at roughly 15–20× revenue
-per account.
+- **Catalogue** — AI shopping agents can't see most merchants' products because
+  the data is written for humans. Score, fix, truth-check and attribute at
+  catalogue scale. Lowest revenue per account, but nobody has to sell it.
+- **Labour** — Indian principal employers carry vicarious liability for their
+  contractors' PF, ESI and wage defaults. Collect, verify and gate payment.
+  Highest revenue per account; needs field sales.
+- **Insurance** — US contractors and property managers chase subcontractor
+  Certificates of Insurance by hand. Highest ceiling; slowest to start.
+
+All three run the **same engine** — ingest, read, check against rules, fix or
+chase, monitor continuously. Only the document type and the rule library
+differ. The choice is about the sales motion you can sustain, not the idea.
+
+The side-by-side decision table is at the end of
+[`AGENT-COMMERCE-THESIS.md`](docs/AGENT-COMMERCE-THESIS.md).
 
 ## One-paragraph summary
 
